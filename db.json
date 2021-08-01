@@ -1,0 +1,25 @@
+{
+    "lists":[
+        {
+            "id":"1",
+            "text": "go to store",
+            "state": 1
+        },
+        {
+            "id":"2",
+            "text": "go to school",
+            "state": 1
+        }
+    ],
+
+    "tasks":[
+        {
+            "id-of-list":"1",
+            "id-of-task":"1",
+            "isDone": false,
+            "isImportant": true,
+            "text": "buy a milk",
+            "date": "March"
+        }
+    ]
+}
