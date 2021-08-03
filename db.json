@@ -9,22 +9,63 @@
     {
       "id": 2,
       "text": "go to school",
-      "state": "all-done",
-      "tasks": [
-        {
-          "isDone": true,
-          "isImportant": false,
-          "text": "test",
-          "date": "3.7.2021 22:53",
-          "id": 0
-        }
-      ]
+      "state": "without-tasks",
+      "tasks": []
     },
     {
       "id": 3,
       "text": "go home",
       "state": "without-tasks",
       "tasks": []
+    },
+    {
+      "text": "asd",
+      "state": "not-all-are-done",
+      "tasks": [
+        {
+          "isDone": true,
+          "isImportant": true,
+          "text": "test",
+          "date": "4.7.2021 2:8",
+          "id": 0
+        },
+        {
+          "isDone": true,
+          "isImportant": false,
+          "text": "test",
+          "date": "4.7.2021 2:8",
+          "id": 1
+        },
+        {
+          "isDone": true,
+          "isImportant": false,
+          "text": "test",
+          "date": "4.7.2021 2:10",
+          "id": 2
+        },
+        {
+          "isDone": true,
+          "isImportant": false,
+          "text": "asd",
+          "date": "4.7.2021 2:10",
+          "id": 3
+        }
+      ],
+      "id": 4
+    },
+    {
+      "text": "test",
+      "state": "not-all-are-done",
+      "tasks": [
+        {
+          "isDone": false,
+          "isImportant": false,
+          "text": "test",
+          "date": "4.7.2021 2:8",
+          "id": 0
+        }
+      ],
+      "id": 5
     }
   ]
 }

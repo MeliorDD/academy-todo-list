@@ -93,11 +93,9 @@
           alert('Выберите список дел!')
           return
         }
-        if(this.currentList.state === "without-tasks"){
-          this.currentList.state = "not-all-are-done"
-        }
         taskToAdd.id = this.currentList.tasks.length
         this.currentList.tasks.push(taskToAdd)
+        this.changeState()
         fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
           method:'PUT',
           headers:{
@@ -111,9 +109,7 @@
         if(confirm(`Удалить дело "${taskToDelete.text}"?`))
         {
           this.currentList.tasks = this.currentList.tasks.filter(task => task.id !== taskToDelete.id)
-          if(this.currentList.tasks.length === 0){
-            this.currentList.state = "without-tasks"
-          }
+          this.changeState()
           fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
             method:'PUT',
             headers:{
@@ -125,13 +121,10 @@
       },
 
       async checkboxClicked(taskToChange){
-        let flag = true
         this.currentList.tasks.forEach(task => {
           if(task.id === taskToChange.id) task.isDone = !taskToChange.isDone
-          if(task.isDone === false) flag = false
         })
-        console.log(flag)
-        flag === true ? this.currentList.state = "all-done" : this.currentList.state = "not-all-are-done"
+        this.changeState()
         fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
           method:'PUT',
           headers:{
@@ -140,7 +133,19 @@
           body:JSON.stringify(this.currentList)
         })
       },
-
+      changeState(){
+        const count = this.currentList.tasks.filter(task => task.isDone === true).length
+        if(this.currentList.tasks.length === 0){
+          this.currentList.state = "without-tasks"
+        }
+        else if(count < this.currentList.tasks.length){
+          this.currentList.state = "not-all-are-done"
+        }
+        else if(count === this.currentList.tasks.length)
+        {
+          this.currentList.state = "all-done"
+        }
+      }
     
     },
     async created(){
