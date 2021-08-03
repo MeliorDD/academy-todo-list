@@ -1,10 +1,10 @@
 <template>
     <div>
-        <input type="checkbox"/>
+        <input type="checkbox" @click="$emit('checkbox-clicked',task)" :checked="task.isDone === true ? true : false"/>
         <label v-if="task.isImportant"></label>
         <p> {{task.text}} </p>
         <p> {{task.date}} </p>
-        <i class="i fas fa-times"></i>
+        <i @click="$emit('delete-task', task)" class="i fas fa-times"></i>
     </div>
 </template>
 

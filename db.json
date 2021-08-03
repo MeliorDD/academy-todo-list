@@ -1,25 +1,30 @@
 {
-    "lists":[
+  "lists": [
+    {
+      "id": 1,
+      "text": "go to store",
+      "state": "without-tasks",
+      "tasks": []
+    },
+    {
+      "id": 2,
+      "text": "go to school",
+      "state": "all-done",
+      "tasks": [
         {
-            "id":"1",
-            "text": "go to store",
-            "state": 1
-        },
-        {
-            "id":"2",
-            "text": "go to school",
-            "state": 1
+          "isDone": true,
+          "isImportant": false,
+          "text": "test",
+          "date": "3.7.2021 22:53",
+          "id": 0
         }
-    ],
-
-    "tasks":[
-        {
-            "id-of-list":"1",
-            "id-of-task":"1",
-            "isDone": false,
-            "isImportant": true,
-            "text": "buy a milk",
-            "date": "March"
-        }
-    ]
+      ]
+    },
+    {
+      "id": 3,
+      "text": "go home",
+      "state": "without-tasks",
+      "tasks": []
+    }
+  ]
 }

@@ -9,52 +9,46 @@
         </select>
       </div>
       <div class="list-of-lists">
-        <Tasks v-for="list in lists" 
+        <List @list-clicked ="listClicked" v-for="list in lists" 
           :key="list.id" 
-          :list = "list" 
+          :list = "list"
+          @delete-list="deleteList" 
           />
       </div>
-      <div class="add-list">
-        <input type="text"/>
-        <button>Добавить список</button>
-      </div>
+      <AddList @add-list="addList"/>
     </div>
     <div class="right-side">
       <div class="list-of-tasks">
-        <Task :task="task" />
+        <Task @delete-task = "deleteTask" 
+          @checkbox-clicked = "checkboxClicked" 
+          v-for="task in currentList.tasks" 
+          :key="task.id" 
+          :task="task"/>
       </div>
-      <div class="add-task">
-        <input type="text" placeholder="Введите дело">
-        <input type="checkbox" id="important">
-        <label for="important"> Срочное </label>
-        <button>Добавить дело</button>
-      </div>
+      <AddTask @add-task="addTask"/>
     </div>
   </div>
 </template>
 
 <script>
-  import Tasks from './components/Tasks'
+  import List from './components/List'
   import Task from './components/Task'
-
+  import AddList from './components/AddList'
+  import AddTask from './components/AddTask';
   export default {
     name: 'App',
     components:{
       Task,
-      Tasks,
+      List,
+      AddList,
+      AddTask,
     },
 
     data()
     {
       return{
         lists:[],
-        currentList: "1",
-        task: {
-          text: 'Hello world',
-          date: '3 march',
-          isImportant: true
-        }
-        
+        currentList: {},
       }
     },
     methods:{
@@ -63,18 +57,96 @@
         const data = await res.json()
         return data
       },
-      // async getTasks(){
-      //   const res = await fetch("http://localhost:5000/tasks")
-      //   const data = await res.json()
-      //   return data
-      // },
-      changeList(){
-        alert('hi')
-      }
+
+      listClicked(list){
+        this.currentList = list
+      },
+
+      async addList(text){
+        const newList = {
+          text: text,
+          state: "without-tasks",
+          tasks:[]
+        }
+        const res = await fetch("http://localhost:5000/lists",{
+          method: 'POST',
+          headers:{
+            'Content-type': 'application/json'
+          },
+          body:JSON.stringify(newList)
+        })
+        const data = await res.json()
+        this.lists = [...this.lists, data]
+      },
+
+      async deleteList(listToDelete){
+        if(confirm(`Удалить список "${listToDelete.text}" ?`)){
+          const res = await fetch(`http://localhost:5000/lists/${listToDelete.id}`, {
+            method: 'DELETE'
+          })
+          res.status === 200 ? (this.lists = this.lists.filter(list => list.id !== listToDelete.id)) : alert('Ошибка удаления списка')
+        }
+      },
+
+      async addTask(taskToAdd){
+        if(Object.keys(this.currentList).length === 0){
+          alert('Выберите список дел!')
+          return
+        }
+        if(this.currentList.state === "without-tasks"){
+          this.currentList.state = "not-all-are-done"
+        }
+        taskToAdd.id = this.currentList.tasks.length
+        this.currentList.tasks.push(taskToAdd)
+        fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
+          method:'PUT',
+          headers:{
+            'Content-type': 'application/json'
+          },
+          body:JSON.stringify(this.currentList)
+        })
+      },
+
+      async deleteTask(taskToDelete){
+        if(confirm(`Удалить дело "${taskToDelete.text}"?`))
+        {
+          this.currentList.tasks = this.currentList.tasks.filter(task => task.id !== taskToDelete.id)
+          if(this.currentList.tasks.length === 0){
+            this.currentList.state = "without-tasks"
+          }
+          fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
+            method:'PUT',
+            headers:{
+              'Content-type': 'application/json'
+            },
+            body:JSON.stringify(this.currentList)
+          })
+        }
+      },
+
+      async checkboxClicked(taskToChange){
+        let flag = true
+        this.currentList.tasks.forEach(task => {
+          if(task.id === taskToChange.id) task.isDone = !taskToChange.isDone
+          if(task.isDone === false) flag = false
+        })
+        console.log(flag)
+        flag === true ? this.currentList.state = "all-done" : this.currentList.state = "not-all-are-done"
+        fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
+          method:'PUT',
+          headers:{
+            'Content-type': 'application/json'
+          },
+          body:JSON.stringify(this.currentList)
+        })
+      },
+
+    
     },
     async created(){
       this.lists = await this.getLists()
-    }
+    },
+    emits:['list-clicked', 'add-list', 'delete-list','add-task', 'delete-task','checkbox-clicked']
   }
 </script>
 
