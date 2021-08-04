@@ -13,18 +13,13 @@
           :key="list.id" 
           :list = "list"
           @delete-list="deleteList" 
+          :class="list.id === currentList.id ? 'active' : 'inactive'"
           />
       </div>
       <AddList @add-list="addList"/>
     </div>
     <div class="right-side">
-      <div class="list-of-tasks">
-        <Task @delete-task = "deleteTask" 
-          @checkbox-clicked = "checkboxClicked" 
-          v-for="task in currentList.tasks" 
-          :key="task.id" 
-          :task="task"/>
-      </div>
+      <router-view></router-view>
       <AddTask @add-task="addTask"/>
     </div>
   </div>
@@ -32,13 +27,12 @@
 
 <script>
   import List from './components/List'
-  import Task from './components/Task'
   import AddList from './components/AddList'
   import AddTask from './components/AddTask';
+
   export default {
     name: 'App',
     components:{
-      Task,
       List,
       AddList,
       AddTask,
@@ -52,14 +46,9 @@
       }
     },
     methods:{
-      async getLists(){
-        const res = await fetch("http://localhost:5000/lists")
-        const data = await res.json()
-        return data
-      },
-
       listClicked(list){
         this.currentList = list
+        this.$router.push({name:'tasks', params:{ id:this.currentList.id, list:this.currentList}})
       },
 
       async addList(text){
@@ -93,9 +82,10 @@
           alert('Выберите список дел!')
           return
         }
-        taskToAdd.id = this.currentList.tasks.length
+        this.currentList.tasks.length !== 0 ? taskToAdd.id = this.currentList.tasks[this.currentList.tasks.length - 1].id + 1: taskToAdd.id = 0
+        console.log(this.currentList.tasks.length)
         this.currentList.tasks.push(taskToAdd)
-        this.changeState()
+        if(this.currentList.state === 'without-tasks') this.currentList.state = 'not-all-are-done'
         fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
           method:'PUT',
           headers:{
@@ -104,52 +94,9 @@
           body:JSON.stringify(this.currentList)
         })
       },
-
-      async deleteTask(taskToDelete){
-        if(confirm(`Удалить дело "${taskToDelete.text}"?`))
-        {
-          this.currentList.tasks = this.currentList.tasks.filter(task => task.id !== taskToDelete.id)
-          this.changeState()
-          fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
-            method:'PUT',
-            headers:{
-              'Content-type': 'application/json'
-            },
-            body:JSON.stringify(this.currentList)
-          })
-        }
-      },
-
-      async checkboxClicked(taskToChange){
-        this.currentList.tasks.forEach(task => {
-          if(task.id === taskToChange.id) task.isDone = !taskToChange.isDone
-        })
-        this.changeState()
-        fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
-          method:'PUT',
-          headers:{
-            'Content-type': 'application/json'
-          },
-          body:JSON.stringify(this.currentList)
-        })
-      },
-      changeState(){
-        const count = this.currentList.tasks.filter(task => task.isDone === true).length
-        if(this.currentList.tasks.length === 0){
-          this.currentList.state = "without-tasks"
-        }
-        else if(count < this.currentList.tasks.length){
-          this.currentList.state = "not-all-are-done"
-        }
-        else if(count === this.currentList.tasks.length)
-        {
-          this.currentList.state = "all-done"
-        }
-      }
-    
     },
     async created(){
-      this.lists = await this.getLists()
+      this.lists = await this.$store.dispatch('loadLists')
     },
     emits:['list-clicked', 'add-list', 'delete-list','add-task', 'delete-task','checkbox-clicked']
   }
@@ -183,4 +130,8 @@
   .right-side{
     flex:0 0 70%;
   }
+  .active{
+    border: 1px solid black;
+  }
+
 </style>
