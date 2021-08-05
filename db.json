@@ -1,63 +1,22 @@
 {
   "lists": [
     {
-      "id": 1,
-      "text": "go to store",
-      "state": "not-all-are-done",
-      "tasks": [
-        {
-          "isDone": false,
-          "isImportant": false,
-          "text": "test",
-          "date": "5.7.2021 2:51",
-          "id": 0
-        },
-        {
-          "isDone": false,
-          "isImportant": false,
-          "text": "test",
-          "date": "5.7.2021 2:51",
-          "id": 1
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "text": "go home",
-      "state": "all-done",
-      "tasks": [
-        {
-          "isDone": true,
-          "isImportant": false,
-          "text": "asd",
-          "date": "5.7.2021 2:51",
-          "id": 0
-        }
-      ]
-    },
-    {
-      "text": "asd",
+      "text": "test",
       "state": "without-tasks",
       "tasks": [],
-      "id": 4
+      "id": 2
     },
     {
       "text": "test",
+      "state": "without-tasks",
+      "tasks": [],
+      "id": 3
+    },
+    {
+      "text": "test1",
       "state": "without-tasks",
       "tasks": [],
       "id": 5
-    },
-    {
-      "text": "test",
-      "state": "without-tasks",
-      "tasks": [],
-      "id": 6
-    },
-    {
-      "text": "test",
-      "state": "without-tasks",
-      "tasks": [],
-      "id": 7
     }
   ]
 }

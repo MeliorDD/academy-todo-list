@@ -2,10 +2,10 @@
   <div class="root">
     <div class="left-side">
       <div class="filter">
-        <select>
-          <option value="1">Все</option>
-          <option value="2">Доделанные</option>
-          <option value="3">Недоделанные</option>
+        <select v-model="selected" @change="filterByState">
+          <option value="Неисполненные">Неисполненные</option>
+          <option value="Исполненные">Исполненные</option>
+          <option value="Все">Все</option>
         </select>
       </div>
       <div class="list-of-lists">
@@ -41,8 +41,10 @@
     data()
     {
       return{
+        allLists:[],
         lists:[],
         currentList: {},
+        selected: 'Неисполненные'
       }
     },
     methods:{
@@ -65,7 +67,8 @@
           body:JSON.stringify(newList)
         })
         const data = await res.json()
-        this.lists = [...this.lists, data]
+        this.allLists = [...this.allLists, data]
+        this.filterByState()
       },
 
       async deleteList(listToDelete){
@@ -73,7 +76,11 @@
           const res = await fetch(`http://localhost:5000/lists/${listToDelete.id}`, {
             method: 'DELETE'
           })
-          res.status === 200 ? (this.lists = this.lists.filter(list => list.id !== listToDelete.id)) : alert('Ошибка удаления списка')
+          res.status === 200 ? (this.allLists = this.allLists.filter(list => list.id !== listToDelete.id)) : alert('Ошибка удаления списка')
+          if(listToDelete.id === this.currentList.id){
+            this.$router.push({path:'/'})
+          }
+          this.filterByState()
         }
       },
 
@@ -83,7 +90,6 @@
           return
         }
         this.currentList.tasks.length !== 0 ? taskToAdd.id = this.currentList.tasks[this.currentList.tasks.length - 1].id + 1: taskToAdd.id = 0
-        console.log(this.currentList.tasks.length)
         this.currentList.tasks.push(taskToAdd)
         if(this.currentList.state === 'without-tasks') this.currentList.state = 'not-all-are-done'
         fetch(`http://localhost:5000/lists/${this.currentList.id}`,{
@@ -94,11 +100,40 @@
           body:JSON.stringify(this.currentList)
         })
       },
+      sortLists(){
+          this.lists.sort((a, b) => {
+          const textA=a.text.toLowerCase(), textB=b.text.toLowerCase()
+          if (textA < textB)
+            return -1
+          if (textA > textB)
+            return 1
+          return 0
+        })
+      },
+      filterByState(){
+        switch (this.selected){
+          case 'Неисполненные':
+            this.lists = this.allLists.filter(element => element.state === 'without-tasks' || element.state === 'not-all-are-done')
+            break
+          case 'Исполненные':
+            this.lists = this.allLists.filter(element => element.state === 'all-done')
+            break
+          case 'Все':
+            this.lists = this.allLists
+            break
+        }
+        if(this.lists.indexOf(this.currentList) === -1){
+          this.currentList = {}
+        }
+        this.sortLists() 
+      }
     },
     async created(){
-      this.lists = await this.$store.dispatch('loadLists')
+      this.allLists = await this.$store.dispatch('loadLists')
+      this.filterByState()
+      this.sortLists()
     },
-    emits:['list-clicked', 'add-list', 'delete-list','add-task', 'delete-task','checkbox-clicked']
+    emits:['list-clicked', 'add-list', 'delete-list','add-task']
   }
 </script>
 
