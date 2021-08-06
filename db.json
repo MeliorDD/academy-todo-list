@@ -2,18 +2,26 @@
   "lists": [
     {
       "text": "test",
-      "state": "without-tasks",
-      "tasks": [],
+      "state": "all-done",
+      "tasks": [
+        {
+          "isDone": true,
+          "isImportant": false,
+          "text": "asd",
+          "date": "7.7.2021 5:14",
+          "id": 0
+        }
+      ],
       "id": 2
     },
     {
       "text": "test",
       "state": "without-tasks",
       "tasks": [],
-      "id": 3
+      "id": 4
     },
     {
-      "text": "test1",
+      "text": "b",
       "state": "without-tasks",
       "tasks": [],
       "id": 5

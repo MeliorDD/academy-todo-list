@@ -1,6 +1,6 @@
 <template>
     <div>
-        <input type="checkbox" @click="$emit('checkbox-clicked',task)" :checked="task.isDone === true ? true : false"/>
+        <input type="checkbox" @click="$emit('checkbox-clicked',task)" :checked="task.isDone"/>
         <label v-if="task.isImportant"></label>
         <p> {{task.text}} </p>
         <p> {{task.date}} </p>
