@@ -1,16 +1,20 @@
 <template>
-    <div @click="$emit('list-clicked', list)" :class="list.state" >
+    <div @click="listClicked" :class="list.state" >
         <p> {{ list.text }} <i @click="$emit('delete-list', list)" class="i fas fa-times"></i></p>
     </div>
 </template>
 
 <script>
-
     export default {
         name: 'List',
         props: {
             list:Object
         },
+        methods:{
+            listClicked(){
+                this.$emit('list-clicked', this.list)
+            }
+        }
     }
 
 </script>
