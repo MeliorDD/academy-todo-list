@@ -1,7 +1,7 @@
 <template>
     <form @submit="onSubmit">
-        <input type="text" name="text" v-model="text" placeholder="Введите название списка">
-        <input type="submit" value="Добавить список">
+        <b-form-input class="input" type="text" name="text" v-model="text" placeholder="Введите название списка"></b-form-input>
+        <b-button type="submit" variant="primary"> Добавить список</b-button>
     </form>
 </template>
 
@@ -30,4 +30,14 @@
         }
     }
 </script>
+
+<style scoped lang="scss">
+    form{
+        padding: 20px;
+        border-top: 1px solid black;
+        .input{
+            margin-bottom: 10px;
+        }
+    }
+</style>
 

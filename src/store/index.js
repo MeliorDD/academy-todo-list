@@ -47,9 +47,15 @@ export default new Vuex.Store({
   actions:{
     async loadLists({commit,dispatch}){
         const res = await fetch("http://localhost:5000/lists")
-        const data = await res.json()
-        commit('SET_LISTS', data)
-        dispatch('filterByState')
+        if(res.ok === true){
+          const data = await res.json()
+          commit('SET_LISTS', data)
+          dispatch('filterByState')
+        }
+        else{
+          alert('Ошибка удаления списка')
+        }
+        
     },
     async addList({commit,dispatch},newList){
       const res = await fetch("http://localhost:5000/lists",{
@@ -59,16 +65,21 @@ export default new Vuex.Store({
         },
         body:JSON.stringify(newList)
       })
-      const data = await res.json()
-      commit('ADD_LIST', data)
-      dispatch('filterByState')
+      if(res.ok === true){
+        const data = await res.json()
+        commit('ADD_LIST', data)
+        dispatch('filterByState')
+      }
+      else{
+        alert('Ошибка добавления списка')
+      }
+      
     },
     async deleteList({commit,dispatch}, listToDelete){
-      if(confirm(`Удалить список "${listToDelete.text}" ?`)){
         const res = await fetch(`http://localhost:5000/lists/${listToDelete.id}`, {
           method: 'DELETE'
         })
-        if(res.status === 200)
+        if(res.ok === true)
         {
           commit('DELETE_LIST', listToDelete)
           dispatch('filterByState')
@@ -76,46 +87,43 @@ export default new Vuex.Store({
         else{
           alert('Ошибка удаления списка')
         } 
-        
-      }
     },
     changeCurrentList({commit},list){
       commit('CHANGE_CURRENT_LIST', list)
     },
     async addTask({commit, getters, dispatch}, taskToAdd){
       const listToChange = getters.getCurrentList
-      if(Object.keys(listToChange).length === 0){
-        alert('Выберите список дел!')
-        return
-      }
       listToChange.tasks.length !== 0 ? taskToAdd.id = listToChange.tasks[listToChange.tasks.length - 1].id + 1: taskToAdd.id = 0
       listToChange.tasks.push(taskToAdd)
       if(listToChange.state === 'without-tasks') listToChange.state = 'not-all-are-done'
-      fetch(`http://localhost:5000/lists/${listToChange.id}`,{
+      const res = await fetch(`http://localhost:5000/lists/${listToChange.id}`,{
         method:'PUT',
         headers:{
           'Content-type': 'application/json'
         },
         body:JSON.stringify(listToChange)
       })
-      commit('CHANGE_CURRENT_LIST', listToChange)
-      dispatch('changeState')
+      if(res.ok === true){
+        commit('CHANGE_CURRENT_LIST', listToChange)
+        dispatch('changeState')
+      }
+      else{
+        alert('Ошибка добавления дела')
+      }
+      
     },
     async deleteTask({commit, getters, dispatch},taskToDelete){
       const listToChange = getters.getCurrentList
-      if(confirm(`Удалить дело "${taskToDelete.text}"?`))
-      {
-        listToChange.tasks = listToChange.tasks.filter(task => task.id !== taskToDelete.id)
-        dispatch('changeState')
-        fetch(`http://localhost:5000/lists/${listToChange.id}`,{
-            method:'PUT',
-            headers:{
-            'Content-type': 'application/json'
-            },
-            body:JSON.stringify(listToChange)
-        })
-      }
-      commit('CHANGE_CURRENT_LIST', listToChange)
+      listToChange.tasks = listToChange.tasks.filter(task => task.id !== taskToDelete.id)
+      dispatch('changeState')
+      const res = await fetch(`http://localhost:5000/lists/${listToChange.id}`,{
+          method:'PUT',
+          headers:{
+          'Content-type': 'application/json'
+          },
+          body:JSON.stringify(listToChange)
+      })
+      res.ok === true ? commit('CHANGE_CURRENT_LIST', listToChange) : alert('Ошибка удаления дела')
     },
     async checkboxClicked({commit,getters, dispatch},taskToChange){
       const listToChange = getters.getCurrentList
@@ -124,13 +132,14 @@ export default new Vuex.Store({
       })
       commit('CHANGE_CURRENT_LIST', listToChange)
       dispatch('changeState')
-      fetch(`http://localhost:5000/lists/${listToChange.id}`,{
+      const res = await fetch(`http://localhost:5000/lists/${listToChange.id}`,{
       method:'PUT',
       headers:{
           'Content-type': 'application/json'
       },
       body:JSON.stringify(listToChange)
       })
+      if(res.ok === false) alert('Ошибка')
       
   },
     changeState({commit, getters, dispatch}){

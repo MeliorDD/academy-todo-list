@@ -1,5 +1,8 @@
 <template>
   <div class="root">
+    <Popup :type ="typeOfPopup" v-if="isPopupVisible" @close="close" @accept="accept" @cancel="cancel">
+      {{massageInPopup}}
+    </Popup>
     <div class="left-side">
       <div class="filter">
         <select v-model="selected" @change="filterByState">
@@ -13,13 +16,16 @@
           :key="list.id" 
           :list = "list"
           @delete-list="deleteList" 
-          :class="list.id === currentList.id ? 'active' : 'inactive'"
+          :isActive="list.id === currentList.id ? true : false"
           />
       </div>
       <AddList @add-list="addList"/>
     </div>
     <div class="right-side">
-      <router-view></router-view>
+      <div class="list-of-tasks">
+        <router-view></router-view>
+      </div>
+      
       <AddTask @add-task="addTask"/>
     </div>
   </div>
@@ -29,7 +35,9 @@
   import List from './List'
   import AddList from './AddList'
   import AddTask from './AddTask';
+  import Popup from './Popup';
   import {mapGetters} from 'vuex'
+
 
   export default {
     name: 'MainPage',
@@ -37,13 +45,16 @@
       List,
       AddList,
       AddTask,
+      Popup,
     },
-
     data()
     {
       return{
-        lists:[],
-        selected: 'Неисполненные'
+        selected: 'Неисполненные',
+        typeOfPopup: '',
+        isPopupVisible:false,
+        massageInPopup:'',
+        listToDelete:{}
       }
     },
     methods:{
@@ -59,35 +70,52 @@
           tasks:[]
         }
         await this.$store.dispatch('addList', newList)
-        this.filterByState()
+        this.showPopup('alert',`Список дел "${text}" добавлен`)
+        //this.filterByState()
+
       },
 
       async deleteList(listToDelete){
-        await this.$store.dispatch('deleteList', listToDelete)
-        if(listToDelete.id === this.currentList.id) {
-          this.$router.push({path:'/'})
-          this.$store.dispatch('changeCurrentList', {})
-        }
+        this.listToDelete = listToDelete
+        this.showPopup('confirm', `Удалить список дел "${listToDelete.text}"?`)
       },
 
       async addTask(taskToAdd){
+        if(Object.keys(this.currentList).length === 0){
+          this.showPopup('alert', 'Выберите список дел!')
+          return
+        }
+        if(!taskToAdd.text){
+          this.showPopup('alert','Введите название дела!')
+          return
+        }
         this.$store.dispatch('addTask', taskToAdd)
-      },
-      sortLists(){
-          this.lists.sort((a, b) => {
-          const textA=a.text.toLowerCase(), textB=b.text.toLowerCase()
-          if (textA < textB)
-            return -1
-          if (textA > textB)
-            return 1
-          return 0
-        })
+        this.showPopup('alert', `"${taskToAdd.text}" добавлено в "${this.currentList.text}" `)
       },
       filterByState(){
 
         this.$store.commit('CHANGE_SELECTED', this.selected)
         this.$store.dispatch('filterByState')
       },
+      showPopup(type, massage){
+        this.isPopupVisible = true
+        this.typeOfPopup = type
+        this.massageInPopup = massage
+      },
+      close(){
+        this.isPopupVisible = false
+      },
+      async accept(){
+        await this.$store.dispatch('deleteList', this.listToDelete)
+        if(this.listToDelete.id === this.currentList.id) {
+          this.$router.push({path:'/'})
+          this.$store.dispatch('changeCurrentList', {})
+        }
+        this.isPopupVisible = false
+      },
+      cancel(){
+        this.isPopupVisible = false
+      }
     },
     async created(){
         await this.$store.dispatch('loadLists')
@@ -102,11 +130,11 @@
           return this.getCurrentList
         }
     },
-    emits:['list-clicked', 'add-list', 'delete-list','add-task']
+    emits:['list-clicked', 'add-list', 'delete-list','add-task','close','accept', 'cancel']
   }
 </script>
 
-<style>
+<style lang="scss">
   .root{
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -114,28 +142,43 @@
     text-align: center;
     color: #2c3e50;
     box-sizing: border-box;
-
     display: flex;
     border: 1px solid black;
     height: 95vh;
-  }
-  .left-side{
-    flex: 0 0 30%;
-    border: 1px solid black;
-  
-  }
-  .filter{
-    height: 50px;
-    border-bottom: 1px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .right-side{
-    flex:0 0 70%;
-  }
-  .active{
-    border: 1px solid black;
-  }
+    width: 95%;
+    margin: 0 auto;
+    margin-top: 20px;
 
+    .left-side{
+      flex: 0 0 30%;
+      min-width: 250px;
+      border-right: 2px solid black;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .filter{
+        height: 70px;
+        border-bottom: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        select{
+          padding: 5px;
+        }
+      }
+      .list-of-lists{
+        height: 100%;
+        overflow-y: auto;
+      }
+    }
+    .right-side{
+      flex:0 0 70%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .list-of-tasks{
+        overflow-y: auto;
+      }
+    }
+  }
 </style>

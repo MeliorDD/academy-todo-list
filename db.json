@@ -1,24 +1,37 @@
 {
   "lists": [
     {
-      "text": "test",
+      "text": "test123",
+      "state": "without-tasks",
+      "tasks": [],
+      "id": 1
+    },
+    {
+      "text": "asd",
       "state": "all-done",
       "tasks": [
         {
           "isDone": true,
           "isImportant": false,
-          "text": "asd",
-          "date": "7.7.2021 5:14",
+          "text": "test123",
+          "date": "8.7.2021 5:37",
           "id": 0
+        },
+        {
+          "isDone": true,
+          "isImportant": false,
+          "text": "test123",
+          "date": "8.7.2021 5:37",
+          "id": 1
         }
       ],
       "id": 2
     },
     {
-      "text": "test",
+      "text": "test123",
       "state": "without-tasks",
       "tasks": [],
-      "id": 4
+      "id": 3
     }
   ]
 }
