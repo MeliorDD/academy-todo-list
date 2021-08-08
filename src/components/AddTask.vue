@@ -38,31 +38,6 @@
 </script>
 
 <style scoped lang="scss">
-    form{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        border-top: 1px solid black;
-        .checkbox{
-            margin: 0px 20px
-        }
-        .button{
-            min-width: 160px;
-        }
-    }
-    @media(max-width:947px){
-        form{
-            flex-wrap: wrap;
-            justify-content: start;
-            .input{
-                margin-bottom: 20px;
-            }
-            .checkbox{
-                margin: 0;
-                margin-right: 20px;
-            }
-        }
-    }
+    @import "../assets/addTask.scss";
 </style>
 

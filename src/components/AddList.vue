@@ -17,10 +17,7 @@
             onSubmit(e){
                 e.preventDefault()
 
-                if(!this.text){
-                    alert('Введите название списка!')
-                    return
-                }
+                
                 
                 this.$emit('add-list',this.text)
                 
@@ -32,12 +29,6 @@
 </script>
 
 <style scoped lang="scss">
-    form{
-        padding: 20px;
-        border-top: 1px solid black;
-        .input{
-            margin-bottom: 10px;
-        }
-    }
+    @import "../assets/addList.scss"
 </style>
 

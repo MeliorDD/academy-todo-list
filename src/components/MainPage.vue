@@ -64,11 +64,16 @@
       },
 
       async addList(text){
+        if(!text){
+            this.showPopup('alert', "Введите название списка!")
+            return
+        }
         const newList = {
           text: text,
           state: "without-tasks",
           tasks:[]
         }
+
         await this.$store.dispatch('addList', newList)
         this.showPopup('alert',`Список дел "${text}" добавлен`)
         //this.filterByState()
@@ -135,50 +140,5 @@
 </script>
 
 <style lang="scss">
-  .root{
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    box-sizing: border-box;
-    display: flex;
-    border: 1px solid black;
-    height: 95vh;
-    width: 95%;
-    margin: 0 auto;
-    margin-top: 20px;
-
-    .left-side{
-      flex: 0 0 30%;
-      min-width: 250px;
-      border-right: 2px solid black;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      .filter{
-        height: 70px;
-        border-bottom: 1px solid black;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        select{
-          padding: 5px;
-        }
-      }
-      .list-of-lists{
-        height: 100%;
-        overflow-y: auto;
-      }
-    }
-    .right-side{
-      flex:0 0 70%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      .list-of-tasks{
-        overflow-y: auto;
-      }
-    }
-  }
+  @import "../assets/mainPage.scss"
 </style>

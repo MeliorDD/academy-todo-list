@@ -2,8 +2,16 @@
   "lists": [
     {
       "text": "test123",
-      "state": "without-tasks",
-      "tasks": [],
+      "state": "not-all-are-done",
+      "tasks": [
+        {
+          "isDone": false,
+          "isImportant": false,
+          "text": "test123",
+          "date": "8.7.2021 19:38",
+          "id": 0
+        }
+      ],
       "id": 1
     },
     {

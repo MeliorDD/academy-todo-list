@@ -60,8 +60,6 @@
     }
 </script>
 
-<style scoped>
-    h3{
-        margin: 20px 0;
-    }
+<style scoped lang="scss">
+    @import "../assets/view-tasks.scss"
 </style>
